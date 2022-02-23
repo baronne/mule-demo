@@ -6,11 +6,11 @@ module "api_host" {
 
   name = "api-host"
 
-  count = 1
-  ami                  = data.aws_ami.amazon-linux.id
-  instance_type        = "t3.micro"
-  subnet_id            = module.vpc[0].public_subnets[0]
-  iam_instance_profile = aws_iam_instance_profile.default_profile.name
+  count                  = 1
+  ami                    = data.aws_ami.amazon-linux.id
+  instance_type          = "t3.micro"
+  subnet_id              = module.vpc[0].public_subnets[0]
+  iam_instance_profile   = aws_iam_instance_profile.default_profile.name
   vpc_security_group_ids = [aws_security_group.api_host_sg.id]
   #user_data            = file("userdata.sh")
 

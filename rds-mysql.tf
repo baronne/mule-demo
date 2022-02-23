@@ -11,7 +11,7 @@ module "db" {
   instance_class    = "db.t3.micro"
   allocated_storage = 5
 
-  name  = "demodb"
+  name     = "demodb"
   username = "user"
   port     = "3306"
 
@@ -45,11 +45,11 @@ module "db" {
 
   parameters = [
     {
-      name = "character_set_client"
+      name  = "character_set_client"
       value = "utf8mb4"
     },
     {
-      name = "character_set_server"
+      name  = "character_set_server"
       value = "utf8mb4"
     }
   ]
@@ -87,10 +87,10 @@ resource "aws_security_group" "db_sg" {
   }
 
   # outbound internet access
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  #   egress {
+  #     from_port   = 0
+  #     to_port     = 0
+  #     protocol    = "-1"
+  #     cidr_blocks = ["0.0.0.0/0"]
+  #   }
 }
