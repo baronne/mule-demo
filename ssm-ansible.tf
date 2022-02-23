@@ -11,4 +11,8 @@ resource "aws_ssm_association" "ansible" {
     key    = "tag:Name"
     values = ["api-host"]
   }
+
+  depends_on = [
+    module.s3_playbooks
+  ]
 }

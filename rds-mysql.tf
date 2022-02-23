@@ -1,5 +1,5 @@
 module "db" {
-  count = 0
+  count = 1
 
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 3.0"
@@ -13,6 +13,7 @@ module "db" {
 
   name     = "demodb"
   username = "user"
+  password = var.mysql_password
   port     = "3306"
 
   iam_database_authentication_enabled = true
