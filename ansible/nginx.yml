@@ -1,0 +1,13 @@
+---
+- hosts: all
+  tasks:
+    - name: Install NGINX
+      yum: 
+        name: nginx 
+        state: installed
+        update_cache: yes
+    - name: Start NGINX
+      service: 
+        name: nginx 
+        enabled: yes 
+        state: started

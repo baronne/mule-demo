@@ -1,0 +1,27 @@
+---
+- name: Configure API Host
+  hosts: all
+  tasks:
+    - name: Install OpenJDK 1.8
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+        update_cache: true
+    - name: Download Mule Enterprise Standalone
+      become: yes
+      get_url:
+        url: https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.4.0.zip
+        dest: /tmp
+    - name: Install NGINX
+      yum: 
+        name: nginx 
+        state: installed
+        update_cache: yes
+    - name: Setting the http server page for nginx
+      shell: echo "<h1>Hello World!</h1>" > /usr/share/nginx/html/index.html
+    - name: Start NGINX
+      service: 
+        name: nginx 
+        enabled: yes 
+        state: started
+  
