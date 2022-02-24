@@ -1,7 +1,8 @@
 ---
 - name: Configure API Host
   hosts: all
-  
+  environment:
+    MULE_HOME: '/opt/mule-enterprise-standalone-4.4.0'
   tasks:
     - name: Install OpenJDK 1.8
       yum:
@@ -15,12 +16,18 @@
         state: latest
         update_cache: yes
     
-    - name: Download Mule Enterprise Standalone
-      become: yes
-      get_url:
-        url: https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.4.0.zip
-        dest: /tmp
-    
+    - name: Download and extract Mule Enterprise Standalone
+      ansible.builtin.unarchive:
+        src: https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.4.0.zip
+        dest: /opt
+        remote_src: yes
+
+    - name: Set MULE_HOME environment variable
+      delegate_to: localhost
+      copy:
+        content: export MULE_HOME="/opt/mule-enterprise-standalone-4.4.0"
+        dest: /etc/profile.d/mule_home.sh
+  
     - name: Install NGINX
       yum: 
         name: nginx 
