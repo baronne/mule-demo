@@ -13,6 +13,23 @@ module "s3_playbooks" {
 
 }
 
+################# Create S3 bucket for logging
+module "s3_logging" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "2.14.1"
+
+  bucket = "bmdev-logging"
+  acl    = "private"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  force_destroy = true
+
+}
+
 ###################### Create S3 bucket access policy
 resource "aws_iam_policy" "SSMInstanceProfileS3Policy" {
   name = "SSMInstanceProfileS3Policy"
@@ -26,7 +43,8 @@ resource "aws_iam_policy" "SSMInstanceProfileS3Policy" {
           "s3:ListBucket"
         ],
         "Resource" : [
-          module.s3_playbooks.s3_bucket_arn
+          module.s3_playbooks.s3_bucket_arn,
+          module.s3_logging.s3_bucket_arn
         ]
       },
       {
@@ -39,7 +57,9 @@ resource "aws_iam_policy" "SSMInstanceProfileS3Policy" {
         ],
         "Resource" : [
           "${module.s3_playbooks.s3_bucket_arn}/*",
-          "${module.s3_playbooks.s3_bucket_arn}"
+          "${module.s3_playbooks.s3_bucket_arn}",
+          "${module.s3_logging.s3_bucket_arn}/*",
+          "${module.s3_logging.s3_bucket_arn}"
         ]
       }
     ]
