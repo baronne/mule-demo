@@ -1,5 +1,5 @@
 module "db" {
-  count = 1
+  count = 0
 
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 3.0"
@@ -22,6 +22,9 @@ module "db" {
 
   multi_az = false
 
+  skip_final_snapshot = true
+  apply_immediately = true
+
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
 
@@ -43,6 +46,8 @@ module "db" {
 
   # Database Deletion Protection
   deletion_protection = false
+
+  
 
   parameters = [
     {
