@@ -8,7 +8,7 @@ module "api_host" {
 
   count                  = 1
   ami                    = data.aws_ami.amazon-linux.id
-  instance_type          = "t3.micro"
+  instance_type          = "t3.medium"
   subnet_id              = module.vpc[0].public_subnets[0]
   iam_instance_profile   = aws_iam_instance_profile.default_profile.name
   vpc_security_group_ids = [aws_security_group.api_host_sg.id]
