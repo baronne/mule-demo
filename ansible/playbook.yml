@@ -1,8 +1,10 @@
 ---
 - name: Configure API Host
   hosts: all
+  vars:
+    mule_home: /opt/mule-enterprise-standalone-4.4.0
   environment:
-    MULE_HOME: '/opt/mule-enterprise-standalone-4.4.0'
+    MULE_HOME: '{{ mule_home }}'
   tasks:
     - name: Install OpenJDK 1.8
       yum:
@@ -28,18 +30,23 @@
         content: export MULE_HOME="/opt/mule-enterprise-standalone-4.4.0"
         dest: /etc/profile.d/mule_home.sh
   
-    - name: Install NGINX
-      yum: 
-        name: nginx 
-        state: installed
-        update_cache: yes
-    
-    - name: Setting the http server page for nginx
-      shell: echo "<h1>Hello World!</h1>" > /usr/share/nginx/html/index.html
-    
-    - name: Start NGINX
-      service: 
-        name: nginx 
-        enabled: yes 
-        state: started
-  
+    - name: Install Mule Daemon
+      ansible.builtin.shell: "{{ mule_home }}/bin/mule install"
+
+    - name: Start Mule Daemon
+      ansible.builtin.shell: "{{ mule_home }}/bin/mule start"
+
+    - name: Register runtime with Anypoint Platform
+      ansible.builtin.shell: "{{ mule_home }}/bin/amc_setup -H d3dd1acb-c2d9-4a7d-8202-587a8a8d8867---657980 api-host"
+
+    - name: Get the SQL DB script from GitHub repo
+      get_url: 
+        url: https://raw.githubusercontent.com/gonzalo-camino/fssm-inventory-api/main/src/main/resources/db/script.sql
+        dest: /tmp
+
+    # - name: Execute SQL script to populate DB
+    #   community.mysql.mysql_db:
+    #     login_host: 
+    #     state: import
+    #     name: all
+    #     target: /tmp/script.sql
