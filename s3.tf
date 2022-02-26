@@ -30,47 +30,20 @@ module "s3_logging" {
 
 }
 
-###################### Create S3 bucket access policy
-resource "aws_iam_policy" "SSMInstanceProfileS3Policy" {
-  name = "SSMInstanceProfileS3Policy"
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Sid" : "ListObjectsInBucket",
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:ListBucket"
-        ],
-        "Resource" : [
-          module.s3_playbooks.s3_bucket_arn,
-          module.s3_logging.s3_bucket_arn
-        ]
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:PutObjectAcl",
-          "s3:GetEncryptionConfiguration"
-        ],
-        "Resource" : [
-          "${module.s3_playbooks.s3_bucket_arn}/*",
-          "${module.s3_playbooks.s3_bucket_arn}",
-          "${module.s3_logging.s3_bucket_arn}/*",
-          "${module.s3_logging.s3_bucket_arn}"
-        ]
-      }
-    ]
-  })
+
+#################################################### Upload Ansible Playbook
+data "template_file" "playbook" {
+  template = file("ansible/playbook.yml")
+  vars = {
+    rds_endpoint = module.aurora_mysql_serverless[0].cluster_endpoint
+    db_name = var.db_name
+    region = var.region
+  }
 }
 
-#################################################### UPLOAD Playbooks
-resource "aws_s3_bucket_object" "playbooks" {
-  for_each    = fileset("ansible/", "**")
+resource "aws_s3_bucket_object" "playbook" {
   bucket      = module.s3_playbooks.s3_bucket_id
-  key         = "/${each.value}"
-  source      = "ansible/${each.value}"
-  source_hash = filemd5("ansible/${each.value}")
+  key         = "playbook.yml"
+  content     = data.template_file.playbook.rendered
+  source_hash = filemd5("ansible/playbook.yml")
 }
