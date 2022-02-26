@@ -4,29 +4,27 @@ module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 3.0"
 
-  identifier = "inventory-db"
+  identifier = "db"
 
   engine            = "mysql"
   engine_version    = "8.0.27"
-  instance_class    = "db.t3.micro"
+  instance_class    = var.rds_instance_class
   allocated_storage = 5
 
-  name     = "demodb"
-  username = "user"
-  password = var.mysql_password
+  name     = var.db_name
+  # db_name = "inventory-db" ## not in this version of the module
+  username = local.db_creds.username
+  password = local.db_creds.password
   port     = "3306"
-
-  iam_database_authentication_enabled = true
 
   vpc_security_group_ids = [aws_security_group.db_sg.id]
 
   multi_az = false
 
   skip_final_snapshot = true
-  apply_immediately = true
+  apply_immediately   = true
 
-  maintenance_window = "Mon:00:00-Mon:03:00"
-  backup_window      = "03:00-06:00"
+  backup_retention_period = 1
 
   # Enhanced Monitoring - see example for details on how to create the role
   # by yourself, in case you don't want to create it automatically
@@ -47,7 +45,7 @@ module "db" {
   # Database Deletion Protection
   deletion_protection = false
 
-  
+
 
   parameters = [
     {
