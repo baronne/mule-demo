@@ -7,12 +7,12 @@ module "api_host" {
   name = "api-host"
 
   count                  = 1
-  ami                    = data.aws_ami.amazon-linux.id
-  instance_type          = "t3.medium"
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
   subnet_id              = module.vpc[0].public_subnets[0]
   iam_instance_profile   = aws_iam_instance_profile.default_profile.name
   vpc_security_group_ids = [aws_security_group.api_host_sg.id]
-  #user_data            = file("userdata.sh")
+  user_data              = file("userdata.sh")
 
   root_block_device = [
     {
@@ -20,6 +20,11 @@ module "api_host" {
       volume_type = "gp3"
       volume_size = 10
     },
+  ]
+
+  depends_on = [
+    aws_secretsmanager_secret.db_creds,
+    module.aurora_mysql_serverless
   ]
 
 }
