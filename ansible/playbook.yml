@@ -3,17 +3,18 @@
   hosts: all
   vars:
     mule_home: /opt/mule-enterprise-standalone-4.4.0
+    aws_region: ${region}
   environment:
     MULE_HOME: '{{ mule_home }}'
   tasks:
     - name: Install OpenJDK 1.8
-      yum:
-        name: java-1.8.0-openjdk
+      apt:
+        name: openjdk-8-jdk
         state: present
         update_cache: yes
 
     - name: Install MySQL client
-      yum:
+      apt:
         name: mysql
         state: latest
         update_cache: yes
@@ -36,17 +37,25 @@
     - name: Start Mule Daemon
       ansible.builtin.shell: "{{ mule_home }}/bin/mule start"
 
-    - name: Register runtime with Anypoint Platform
-      ansible.builtin.shell: "{{ mule_home }}/bin/amc_setup -H d3dd1acb-c2d9-4a7d-8202-587a8a8d8867---657980 api-host"
-
     - name: Get the SQL DB script from GitHub repo
       get_url: 
         url: https://raw.githubusercontent.com/gonzalo-camino/fssm-inventory-api/main/src/main/resources/db/script.sql
         dest: /tmp
 
-    # - name: Execute SQL script to populate DB
-    #   community.mysql.mysql_db:
-    #     login_host: 
-    #     state: import
-    #     name: all
-    #     target: /tmp/script.sql
+    - name: lookup secretsmanager secret in the current region
+      debug: msg="{{ lookup('amazon.aws.aws_secret', 'db-creds', region={{ aws_region }}) }}"
+
+    - name: Install collection community.mysql
+      community.general.ansible_galaxy_install:
+        type: collection
+        name: community.mysql
+
+    - name: Execute SQL script to populate DB
+      community.mysql.mysql_db:
+        login_host: ${rds_endpoint}
+        login_user: "{{ lookup('amazon.aws.aws_secret', 'db-creds.username', region={{ aws_region }}) }}"
+        login_password: "{{ lookup('amazon.aws.aws_secret', 'db-creds.password', region={{ aws_region }}) }}"
+        name: ${db_name}
+        state: import
+        target: /tmp/script.sql
+
