@@ -1,3 +1,6 @@
+#### NOTE: this has a dependency issue with the VPC, so create VPC first with target: 
+####       terraform apply -target="module.vpc"
+
 module "vpc_peering" {
   source = "cloudposse/vpc-peering/aws"
   # Cloud Posse recommends pinning every module to a specific version
@@ -7,5 +10,6 @@ module "vpc_peering" {
   name             = "muledemo"
   requestor_vpc_id = module.vpc[0].vpc_id
   acceptor_vpc_id  = module.vpc[1].vpc_id
+
 
 }
