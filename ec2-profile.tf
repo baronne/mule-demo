@@ -32,14 +32,14 @@ resource "aws_iam_role_policy_attachment" "ssm_core_attach" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-###################### Attach S3 Access policy to role
-# resource "aws_iam_role_policy_attachment" "s3_policy_attach" {
-#   role       = aws_iam_role.default_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-# }
-
 ###################### Attach S3 Instance Profile Access policy to role
 resource "aws_iam_role_policy_attachment" "SSMInstanceProfileS3Policy_attach" {
   role       = aws_iam_role.default_role.name
   policy_arn = aws_iam_policy.SSMInstanceProfileS3Policy.arn
+}
+
+###################### Attach Secrets Manager policy to role
+resource "aws_iam_role_policy_attachment" "Secrets_Manager_attach" {
+  role       = aws_iam_role.default_role.name
+  policy_arn = aws_iam_policy.SecretsManagerPolicy.arn
 }
