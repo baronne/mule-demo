@@ -6,7 +6,8 @@ resource "aws_ssm_association" "ansible" {
     SourceInfo          = "{\"path\": \"https://${module.s3_playbooks.s3_bucket_bucket_domain_name}/playbook.yml\"}"
     PlaybookFile        = "playbook.yml"
     InstallDependencies = "True"
-    Verbose             = "-vvvv"
+    Verbose             = "-v"
+    ExtraVariables      = "Version=${filemd5("ansible/playbook.yml")}"
   }
   output_location {
     s3_bucket_name = module.s3_logging.s3_bucket_id
@@ -18,8 +19,7 @@ resource "aws_ssm_association" "ansible" {
   }
 
   depends_on = [
-    module.s3_playbooks
+    module.api_host
   ]
-
 
 }
