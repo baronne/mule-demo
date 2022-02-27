@@ -15,12 +15,12 @@
 
     - name: Install MySQL client
       apt:
-        name: mysql
+        name: mysql-client
         state: latest
         update_cache: yes
     
     - name: Download and extract Mule Enterprise Standalone
-      ansible.builtin.unarchive:
+      unarchive:
         src: https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.4.0.zip
         dest: /opt
         remote_src: yes
@@ -31,30 +31,46 @@
         content: export MULE_HOME="/opt/mule-enterprise-standalone-4.4.0"
         dest: /etc/profile.d/mule_home.sh
   
-    - name: Install Mule Daemon
-      ansible.builtin.shell: "{{ mule_home }}/bin/mule install"
+    - name: Check if Mule daemon installed
+      stat: path=/etc/init.d/mule_ee
+      register: service_status
 
-    - name: Start Mule Daemon
-      ansible.builtin.shell: "{{ mule_home }}/bin/mule start"
+    - name: Install Mule daemon
+      shell: "{{ mule_home }}/bin/mule install"
+      when: not service_status.stat.exists
+
+    - name: Check if Mule daemon is running
+      service: name=mule_ee state=stopped
+      when: service_status.stat.exists
+      register: service_stopped
+
+    - name: Start Mule daemon
+      systemd:
+        state: started
+        name: mule_ee
 
     - name: Get the SQL DB script from GitHub repo
       get_url: 
         url: https://raw.githubusercontent.com/gonzalo-camino/fssm-inventory-api/main/src/main/resources/db/script.sql
         dest: /tmp
 
-    - name: lookup secretsmanager secret in the current region
-      debug: msg="{{ lookup('amazon.aws.aws_secret', 'db-creds', region={{ aws_region }}) }}"
-
-    - name: Install collection community.mysql
-      community.general.ansible_galaxy_install:
-        type: collection
-        name: community.mysql
+    - name: Install boto3 and botocore (required for aws_secret module)
+      apt:
+        name:
+          - python3-boto3
+          - python3-botocore
+        state: present
+    
+    - name: Install PyMySQL (required for mysql_db module)
+      apt:
+        name: python3-pymysql
+        state: present
 
     - name: Execute SQL script to populate DB
       community.mysql.mysql_db:
         login_host: ${rds_endpoint}
-        login_user: "{{ lookup('amazon.aws.aws_secret', 'db-creds.username', region={{ aws_region }}) }}"
-        login_password: "{{ lookup('amazon.aws.aws_secret', 'db-creds.password', region={{ aws_region }}) }}"
+        login_user: ${db_username}
+        login_password: "{{ (lookup('aws_secret', 'db-creds', region=aws_region) | from_json).get('password') }}"
         name: ${db_name}
         state: import
         target: /tmp/script.sql
