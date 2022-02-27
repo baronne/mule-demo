@@ -5,7 +5,7 @@ resource "aws_ssm_association" "ansible" {
     SourceType          = "S3"
     SourceInfo          = "{\"path\": \"https://${module.s3_playbooks.s3_bucket_bucket_domain_name}/playbook.yml\"}"
     PlaybookFile        = "playbook.yml"
-    InstallDependencies = "True"
+    InstallDependencies = "False"
     Verbose             = "-v"
     ExtraVariables      = "Version=${filemd5("ansible/playbook.yml")}"
   }
@@ -19,7 +19,9 @@ resource "aws_ssm_association" "ansible" {
   }
 
   depends_on = [
-    module.api_host
+    module.s3_playbooks,
+    aws_secretsmanager_secret.db_creds,
+    module.aurora_mysql_serverless
   ]
 
 }
