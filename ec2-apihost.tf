@@ -22,11 +22,6 @@ module "api_host" {
     },
   ]
 
-  depends_on = [
-    aws_secretsmanager_secret.db_creds,
-    module.aurora_mysql_serverless
-  ]
-
 }
 
 ################# Security groups
