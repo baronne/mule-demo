@@ -2,25 +2,25 @@
 resource "aws_iam_policy" "SecretsManagerPolicy" {
   name = "SecretsManagerPolicy"
   policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:GetResourcePolicy",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:ListSecretVersionIds"
-            ],
-            "Resource": [
-                aws_secretsmanager_secret.db_creds.arn
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": "secretsmanager:ListSecrets",
-            "Resource": "*"
-        }
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecretVersionIds"
+        ],
+        "Resource" : [
+          aws_secretsmanager_secret.db_creds.arn
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : "secretsmanager:ListSecrets",
+        "Resource" : "*"
+      }
     ]
   })
 }
