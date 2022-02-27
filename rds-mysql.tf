@@ -11,7 +11,7 @@ module "db" {
   instance_class    = var.rds_instance_class
   allocated_storage = 5
 
-  name     = var.db_name
+  name = var.db_name
   # db_name = "inventory-db" ## not in this version of the module
   username = local.db_creds.username
   password = local.db_creds.password
