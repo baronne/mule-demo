@@ -36,8 +36,9 @@ data "template_file" "playbook" {
   template = file("ansible/playbook.yml")
   vars = {
     rds_endpoint = module.aurora_mysql_serverless[0].cluster_endpoint
-    db_name = var.db_name
-    region = var.region
+    db_name      = var.db_name
+    db_username  = var.db_username
+    region       = var.region
   }
 }
 
