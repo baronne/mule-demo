@@ -4,13 +4,13 @@ module "aurora_mysql" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "6.1.4"
 
-  name              = "db"
-  engine            = "aurora-mysql"
-  engine_mode       = "provisioned"
+  name        = "db"
+  engine      = "aurora-mysql"
+  engine_mode = "provisioned"
 
-  master_username = local.db_creds.username
-  master_password = local.db_creds.password
-  create_random_password = false
+  master_username                     = local.db_creds.username
+  master_password                     = local.db_creds.password
+  create_random_password              = false
   iam_database_authentication_enabled = false
 
   database_name = var.db_name
@@ -35,7 +35,7 @@ module "aurora_mysql" {
 
   db_parameter_group_name         = aws_db_parameter_group.aurora_mysql.id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.aurora_mysql.id
-  
+
 }
 
 resource "aws_db_parameter_group" "aurora_mysql" {
