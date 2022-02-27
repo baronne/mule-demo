@@ -4,13 +4,13 @@ module "aurora_mysql_serverless" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "6.1.4"
 
-  name              = "db"
-  engine            = "aurora-mysql"
-  engine_mode       = "serverless"
+  name        = "db"
+  engine      = "aurora-mysql"
+  engine_mode = "serverless"
 
-  master_username = local.db_creds.username
-  master_password = local.db_creds.password
-  create_random_password = false
+  master_username                     = local.db_creds.username
+  master_password                     = local.db_creds.password
+  create_random_password              = false
   iam_database_authentication_enabled = false
 
   database_name = var.db_name
