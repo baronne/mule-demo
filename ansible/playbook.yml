@@ -7,7 +7,7 @@
   environment:
     MULE_HOME: '{{ mule_home }}'
   tasks:
-    - name: Install OpenJDK 1.8
+    - name: Install OpenJDK 8
       apt:
         name: openjdk-8-jdk
         state: present
@@ -28,7 +28,7 @@
     - name: Set MULE_HOME environment variable
       delegate_to: localhost
       copy:
-        content: export MULE_HOME="/opt/mule-enterprise-standalone-4.4.0"
+        content: export MULE_HOME="{{ mule_home }}"
         dest: /etc/profile.d/mule_home.sh
   
     - name: Check if Mule daemon installed
@@ -39,10 +39,12 @@
       shell: "{{ mule_home }}/bin/mule install"
       when: not service_status.stat.exists
 
-    - name: Check if Mule daemon is running
-      service: name=mule_ee state=stopped
-      when: service_status.stat.exists
-      register: service_stopped
+    # - name: Check if Mule daemon is running
+    #   systemd: 
+    #     name: mule_ee 
+    #     state: stopped
+    #     when: service_status.stat.exists
+    #     register: service_stopped
 
     - name: Start Mule daemon
       systemd:
@@ -61,17 +63,21 @@
           - python3-botocore
         state: present
     
-    - name: Install PyMySQL (required for mysql_db module)
+    - name: Install pymysql and mysqldb (required for mysql_db module)
       apt:
-        name: python3-pymysql
+        name: 
+          - python3-mysqldb
+          - python3-pymysql
         state: present
 
     - name: Execute SQL script to populate DB
-      community.mysql.mysql_db:
+      mysql_db:
         login_host: ${rds_endpoint}
         login_user: ${db_username}
         login_password: "{{ (lookup('aws_secret', 'db-creds', region=aws_region) | from_json).get('password') }}"
         name: ${db_name}
         state: import
         target: /tmp/script.sql
+        force: yes
+        use_shell: yes
 
