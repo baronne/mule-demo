@@ -22,3 +22,7 @@ variable "db_name" {
 variable "db_username" {
   type = string
 }
+
+variable "bucket_prefix" {
+  type = string
+}

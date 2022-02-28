@@ -39,7 +39,7 @@ resource "aws_iam_policy" "SSMInstanceProfileS3Policy" {
           "s3:ListBucket"
         ],
         "Resource" : [
-          module.s3_playbooks.s3_bucket_arn,
+          module.s3_assets.s3_bucket_arn,
           module.s3_logging.s3_bucket_arn
         ]
       },
@@ -52,8 +52,8 @@ resource "aws_iam_policy" "SSMInstanceProfileS3Policy" {
           "s3:GetEncryptionConfiguration"
         ],
         "Resource" : [
-          "${module.s3_playbooks.s3_bucket_arn}/*",
-          "${module.s3_playbooks.s3_bucket_arn}",
+          "${module.s3_assets.s3_bucket_arn}/*",
+          "${module.s3_assets.s3_bucket_arn}",
           "${module.s3_logging.s3_bucket_arn}/*",
           "${module.s3_logging.s3_bucket_arn}"
         ]
