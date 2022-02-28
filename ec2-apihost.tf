@@ -29,18 +29,10 @@ resource "aws_security_group" "api_host_sg" {
   name   = "api-host-sg"
   vpc_id = module.vpc[0].vpc_id
 
-  # HTTP access from VPC
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [module.vpc[0].vpc_cidr_block]
-  }
-
   # HTTP access from public internet
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8081
+    to_port     = 8081
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
