@@ -1,13 +1,13 @@
-module "db" {
-  count = 0
+module "rds_mysql" {
+  count = 1
 
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 3.0"
 
-  identifier = "db"
+  identifier = "rds-mysql"
 
   engine            = "mysql"
-  engine_version    = "8.0.27"
+  engine_version    = "8.0.28"
   instance_class    = var.rds_instance_class
   allocated_storage = 5
 
