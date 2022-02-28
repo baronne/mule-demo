@@ -1,9 +1,9 @@
 # Firstly create a random generated password to use in secrets.
 
 resource "random_password" "password" {
-  length           = 16
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  length  = 16
+  special = false
+  # override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 # Creating AWS secret for database master account (db-creds)
