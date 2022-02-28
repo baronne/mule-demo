@@ -4,7 +4,7 @@ module "aurora_mysql" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "6.1.4"
 
-  name        = "db"
+  name        = "aurora-mysql-provisioned"
   engine      = "aurora-mysql"
   engine_mode = "provisioned"
 
