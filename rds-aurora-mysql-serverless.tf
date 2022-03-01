@@ -18,8 +18,8 @@ module "aurora_mysql_serverless" {
   vpc_id                = module.vpc[1].vpc_id
   subnets               = module.vpc[1].private_subnets
   create_security_group = true
-  allowed_cidr_blocks = [module.vpc[0].vpc_cidr_block] # allow access from VPC1
-  publicly_accessible = true
+  allowed_cidr_blocks   = [module.vpc[0].vpc_cidr_block] # allow access from VPC1
+  publicly_accessible   = true
 
   monitoring_interval = 60
 
